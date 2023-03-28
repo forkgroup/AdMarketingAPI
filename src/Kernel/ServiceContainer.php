@@ -29,13 +29,14 @@ class ServiceContainer extends Container
     /**
      * Constructor.
      *
-     * @param array       $config
-     * @param array       $prepends
+     * @param array $config
+     * @param array $prepends
      * @param string|null $id
      */
-    public function __construct(array $config = [], array $prepends = [], string $id = null)
+    public function __construct(array $config = [], array $prepends = [], string $id = null, array $providers = [])
     {
         $this->registerProviders($this->getProviders());
+        $this->registerProviders($providers);
 
         parent::__construct($prepends);
 
@@ -87,7 +88,7 @@ class ServiceContainer extends Container
 
     /**
      * @param string $id
-     * @param mixed  $value
+     * @param mixed $value
      */
     public function rebind($id, $value)
     {
@@ -111,7 +112,7 @@ class ServiceContainer extends Container
      * Magic set access.
      *
      * @param string $id
-     * @param mixed  $value
+     * @param mixed $value
      */
     public function __set($id, $value)
     {
