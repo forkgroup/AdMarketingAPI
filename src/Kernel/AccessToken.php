@@ -96,7 +96,7 @@ abstract class AccessToken implements AccessTokenInterface
         // cache access token and refresh token
         $this->setToken($token);
 
-        $this->app->events->dispatch(new Events\AccessTokenRefreshed($this));
+        $this->app->events?->dispatch(new Events\AccessTokenRefreshed($this));
 
         return $token;
     }

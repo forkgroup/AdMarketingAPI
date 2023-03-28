@@ -6,10 +6,12 @@ declare(strict_types=1);
  */
 namespace AdMarketingAPI;
 
+use AdMarketingAPI\OceanEngine\Application;
+
 /**
  * Class Factory.
  *
- * @method static \AdMarketingAPI\OceanEngine\Application oceanengine(array $config)
+ * @method static \AdMarketingAPI\OceanEngine\Application oceanEngine(array $config, array $providers = [])
  */
 class Factory
 {
@@ -29,13 +31,18 @@ class Factory
     /**
      * @param string $name
      *
-     * @return \EasyWeChat\Kernel\ServiceContainer
+     * @return \AdMarketingAPI\Kernel\ServiceContainer
      */
-    public static function make($name, array $config)
+    public static function make($name, array $config, array $providers = [])
     {
         $namespace = Kernel\Supports\Str::studly($name);
         $application = "\\AdMarketingAPI\\{$namespace}\\Application";
 
-        return new $application($config);
+        return new $application($config, providers: $providers);
+    }
+
+    public static function makeOceanEngine(array $config, array $providers = []): Application
+    {
+        return new Application($config, providers: $providers);
     }
 }

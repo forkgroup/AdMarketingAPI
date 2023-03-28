@@ -41,7 +41,7 @@ class Application extends ServiceContainer
         Dmp\ServiceProvider::class,
     ];
 
-    public function __construct(array $config = [], array $prepends = [])
+    public function __construct(array $config = [], array $prepends = [], array $providers = [])
     {
         if (isset($config['mode']) && $config['mode'] == self::MODE_DEV) {
             $config['http']['base_uri'] = self::URL[self::MODE_DEV];
@@ -49,6 +49,6 @@ class Application extends ServiceContainer
             $config['http']['base_uri'] = self::URL[self::MODE_NORMAL];
         }
 
-        parent::__construct($config, $prepends);
+        parent::__construct($config, $prepends, providers: $providers);
     }
 }

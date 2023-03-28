@@ -151,7 +151,7 @@ class BaseClient
 
         $response = $this->performRequest($url, $method, $options);
 
-        $this->app->events->dispatch(new Events\HttpResponseCreated($response));
+        $this->app->events?->dispatch(new Events\HttpResponseCreated($response));
 
         return $this->proccessApiResult($url, $response);
     }

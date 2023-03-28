@@ -113,7 +113,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     /**
      * Return specific items.
      *
-     * @return \EasyWeChat\Kernel\Support\Collection
+     * @return \AdMarketingAPI\Kernel\Support\Collection
      */
     public function only(array $keys)
     {
@@ -149,7 +149,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      *
      * @param array|Collection $items
      *
-     * @return \EasyWeChat\Kernel\Support\Collection
+     * @return \AdMarketingAPI\Kernel\Support\Collection
      */
     public function merge($items)
     {

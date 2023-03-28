@@ -7,7 +7,11 @@ declare(strict_types=1);
 namespace AdMarketingAPI\Kernel;
 
 use Pimple\Container;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * @property ?EventDispatcherInterface $events
+ */
 class ServiceContainer extends Container
 {
     /**
@@ -44,7 +48,7 @@ class ServiceContainer extends Container
 
         $this->id = $id;
 
-        $this->events->dispatch(new Events\ApplicationInitialized($this));
+        $this->events?->dispatch(new Events\ApplicationInitialized($this));
     }
 
     /**
@@ -56,7 +60,11 @@ class ServiceContainer extends Container
      */
     public function __get($id)
     {
-        return $this->offsetGet($id);
+        if ($this->offsetExists($id)) {
+            return $this->offsetGet($id);
+        }
+
+        return null;
     }
 
     /**
@@ -105,7 +113,6 @@ class ServiceContainer extends Container
             Providers\LogServiceProvider::class,
             Providers\RequestServiceProvider::class,
             Providers\HttpClientServiceProvider::class,
-            Providers\EventDispatcherServiceProvider::class,
         ], $this->providers);
     }
 
