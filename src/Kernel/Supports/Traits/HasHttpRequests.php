@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel\Supports\Traits;
 
 use GuzzleHttp\Client;
@@ -9,7 +13,6 @@ use Psr\Http\Message\ResponseInterface;
 
 /**
  * Trait HasHttpRequests.
- *
  */
 trait HasHttpRequests
 {
@@ -51,8 +54,6 @@ trait HasHttpRequests
 
     /**
      * Return current guzzle default settings.
-     *
-     * @return array
      */
     public static function getDefaultOptions(): array
     {
@@ -61,8 +62,6 @@ trait HasHttpRequests
 
     /**
      * Set GuzzleHttp\Client.
-     *
-     * @param \GuzzleHttp\ClientInterface $httpClient
      *
      * @return $this
      */
@@ -75,12 +74,10 @@ trait HasHttpRequests
 
     /**
      * Return GuzzleHttp\ClientInterface instance.
-     *
-     * @return ClientInterface
      */
     public function getHttpClient(): ClientInterface
     {
-        if (!($this->httpClient instanceof ClientInterface)) {
+        if (! $this->httpClient instanceof ClientInterface) {
             if (property_exists($this, 'app') && $this->app['http_client']) {
                 $this->httpClient = $this->app['http_client'];
             } else {
@@ -94,14 +91,13 @@ trait HasHttpRequests
     /**
      * Add a middleware.
      *
-     * @param callable $middleware
-     * @param string   $name
+     * @param string $name
      *
      * @return $this
      */
     public function pushMiddleware(callable $middleware, string $name = null)
     {
-        if (!is_null($name)) {
+        if (! is_null($name)) {
             $this->middlewares[$name] = $middleware;
         } else {
             array_push($this->middlewares, $middleware);
@@ -112,8 +108,6 @@ trait HasHttpRequests
 
     /**
      * Return all middlewares.
-     *
-     * @return array
      */
     public function getMiddlewares(): array
     {
@@ -125,9 +119,7 @@ trait HasHttpRequests
      *
      * @param string $url
      * @param string $method
-     * @param array  $options
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @param array $options
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -138,8 +130,8 @@ trait HasHttpRequests
         $options = array_merge(self::$defaults, $options, ['handler' => $this->getHandlerStack()]);
 
         $options = $this->fixJsonIssue($options);
-        
-        if (property_exists($this, 'baseUri') && !is_null($this->baseUri)) {
+
+        if (property_exists($this, 'baseUri') && ! is_null($this->baseUri)) {
             $options['base_uri'] = $this->baseUri;
         }
 
@@ -150,8 +142,6 @@ trait HasHttpRequests
     }
 
     /**
-     * @param \GuzzleHttp\HandlerStack $handlerStack
-     *
      * @return $this
      */
     public function setHandlerStack(HandlerStack $handlerStack)
@@ -163,8 +153,6 @@ trait HasHttpRequests
 
     /**
      * Build a handler stack.
-     *
-     * @return \GuzzleHttp\HandlerStack
      */
     public function getHandlerStack(): HandlerStack
     {
@@ -181,11 +169,6 @@ trait HasHttpRequests
         return $this->handlerStack;
     }
 
-    /**
-     * @param array $options
-     *
-     * @return array
-     */
     protected function fixJsonIssue(array $options): array
     {
         if (isset($options['json']) && is_array($options['json'])) {

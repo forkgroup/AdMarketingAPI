@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\OceanEngine\Campaign;
 
 use AdMarketingAPI\OceanEngine\OceanEngine;
@@ -10,10 +14,6 @@ class Campaign extends OceanEngine
      * 获取广告组.
      *
      * @see https://ad.oceanengine.com/openapi/doc/index.html?id=153
-     *
-     * @param int $advertiser_id
-     * @param int $page
-     * @param int $pageSize
      *
      * @return array
      */
@@ -33,10 +33,6 @@ class Campaign extends OceanEngine
      *
      * @see https://ad.oceanengine.com/openapi/doc/index.html?id=187
      *
-     * @param int $advertiser_id
-     * @param int $page
-     * @param int $pageSize
-     *
      * @return array
      */
     public function report(int $advertiser_id, int $page = 1, int $pageSize = 20)
@@ -47,7 +43,7 @@ class Campaign extends OceanEngine
             'page_size' => $pageSize,
         ];
 
-        return $this->required(['start_date','end_date'])
+        return $this->required(['start_date', 'end_date'])
             ->request('open_api/2/report/campaign/get/', $payload);
     }
 
@@ -56,13 +52,11 @@ class Campaign extends OceanEngine
      *
      * @see https://ad.oceanengine.com/openapi/doc/index.html?id=51
      *
-     * @param array $payload
-     *
      * @return array
      */
     public function create(array $payload)
     {
-        return $this->required(['advertiser_id','campaign_name'])
+        return $this->required(['advertiser_id', 'campaign_name'])
             ->request('open_api/2/campaign/create/', $payload, 'POST');
     }
 
@@ -71,13 +65,11 @@ class Campaign extends OceanEngine
      *
      * @see https://ad.oceanengine.com/openapi/doc/index.html?id=51
      *
-     * @param array $payload
-     *
      * @return array
      */
     public function update(array $payload)
     {
-        return $this->required(['advertiser_id','campaign_id'])
+        return $this->required(['advertiser_id', 'campaign_id'])
             ->request('open_api/2/campaign/update/', $payload, 'POST');
     }
 
@@ -85,10 +77,6 @@ class Campaign extends OceanEngine
      * 广告组更新状态.
      *
      * @see https://ad.oceanengine.com/openapi/doc/index.html?id=54
-     *
-     * @param int $advertiser_id
-     * @param array $campaign_ids
-     * @param string $opt_status
      *
      * @return array
      */
@@ -99,7 +87,7 @@ class Campaign extends OceanEngine
             'campaign_ids' => $campaign_ids,
             'opt_status' => $opt_status,
         ];
-        return $this->required(['advertiser_id','campaign_ids', 'opt_status'])
+        return $this->required(['advertiser_id', 'campaign_ids', 'opt_status'])
             ->request('open_api/2/campaign/update/status/', $payload, 'POST');
     }
 }

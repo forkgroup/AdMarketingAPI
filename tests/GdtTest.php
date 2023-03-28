@@ -1,20 +1,29 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Tests;
 
 use AdMarketingAPI\Factory;
+use Redis;
 use Symfony\Component\Cache\Simple\RedisCache;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class GdtTest extends TestCase
 {
     public function app()
     {
         $config = [
-            'account_id' => "xxxxx",
-            'app_id' => "xxxxx",
-            'secret' => "xxxxxx",
+            'account_id' => 'xxxxx',
+            'app_id' => 'xxxxx',
+            'secret' => 'xxxxxx',
             'oauth' => [
-                'scopes' => "",
+                'scopes' => '',
                 // 回调链接
                 'redirect_uri' => 'https://testbgmapi.innotechx.com/oceanengine/oauth/callback ',
             ],
@@ -31,10 +40,10 @@ class GdtTest extends TestCase
             ],
             'mode' => 'normal',
         ];
-       
+
         $app = Factory::Gdt($config);
 
-        $redis = new \Redis();
+        $redis = new Redis();
         $redis->connect('redis_node', 6379);
         // 创建缓存实例
         $cache = new RedisCache($redis);

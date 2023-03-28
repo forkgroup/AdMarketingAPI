@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel\Http;
 
 use AdMarketingAPI\Kernel\Supports\Collection;
@@ -9,10 +13,17 @@ use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Response.
- *
  */
 class Response extends GuzzleResponse
 {
+    /**
+     * @return bool|string
+     */
+    public function __toString()
+    {
+        return $this->getBodyContents();
+    }
+
     /**
      * @return string
      */
@@ -26,8 +37,6 @@ class Response extends GuzzleResponse
     }
 
     /**
-     * @param \Psr\Http\Message\ResponseInterface $response
-     *
      * @return \AdMarketingAPI\Kernel\Http\Response
      */
     public static function buildFromPsrResponse(ResponseInterface $response)
@@ -60,13 +69,13 @@ class Response extends GuzzleResponse
     {
         $content = $this->removeControlCharacters($this->getBodyContents());
 
-        if (false !== stripos($this->getHeaderLine('Content-Type'), 'xml') || 0 === stripos($content, '<xml')) {
+        if (stripos($this->getHeaderLine('Content-Type'), 'xml') !== false || stripos($content, '<xml') === 0) {
             return XML::parse($content);
         }
 
         $array = json_decode($content, true, 512, JSON_BIGINT_AS_STRING);
 
-        if (JSON_ERROR_NONE === json_last_error()) {
+        if (json_last_error() === JSON_ERROR_NONE) {
             return (array) $array;
         }
 
@@ -92,16 +101,6 @@ class Response extends GuzzleResponse
     }
 
     /**
-     * @return bool|string
-     */
-    public function __toString()
-    {
-        return $this->getBodyContents();
-    }
-
-    /**
-     * @param string $content
-     *
      * @return string
      */
     protected function removeControlCharacters(string $content)

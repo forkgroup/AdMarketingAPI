@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel;
 
 use Pimple\Container;
@@ -28,10 +32,6 @@ class ServiceContainer extends Container
 
     /**
      * Constructor.
-     *
-     * @param array $config
-     * @param array $prepends
-     * @param string|null $id
      */
     public function __construct(array $config = [], array $prepends = [], string $id = null, array $providers = [])
     {
@@ -45,6 +45,29 @@ class ServiceContainer extends Container
         $this->id = $id;
 
         $this->events->dispatch(new Events\ApplicationInitialized($this));
+    }
+
+    /**
+     * Magic get access.
+     *
+     * @param string $id
+     *
+     * @return mixed
+     */
+    public function __get($id)
+    {
+        return $this->offsetGet($id);
+    }
+
+    /**
+     * Magic set access.
+     *
+     * @param string $id
+     * @param mixed $value
+     */
+    public function __set($id, $value)
+    {
+        $this->offsetSet($id, $value);
     }
 
     /**
@@ -96,32 +119,6 @@ class ServiceContainer extends Container
         $this->offsetSet($id, $value);
     }
 
-    /**
-     * Magic get access.
-     *
-     * @param string $id
-     *
-     * @return mixed
-     */
-    public function __get($id)
-    {
-        return $this->offsetGet($id);
-    }
-
-    /**
-     * Magic set access.
-     *
-     * @param string $id
-     * @param mixed $value
-     */
-    public function __set($id, $value)
-    {
-        $this->offsetSet($id, $value);
-    }
-
-    /**
-     * @param array $providers
-     */
     public function registerProviders(array $providers)
     {
         foreach ($providers as $provider) {

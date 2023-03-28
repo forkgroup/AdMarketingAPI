@@ -1,9 +1,12 @@
 <?php
 
-
-
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel\Supports;
 
+use Exception;
 use finfo;
 
 /**
@@ -86,7 +89,7 @@ class File
      *
      * @param string $stream
      *
-     * @return string|false
+     * @return false|string
      */
     public static function getStreamExt($stream)
     {
@@ -96,7 +99,7 @@ class File
             if (empty($ext) && is_readable($stream)) {
                 $stream = file_get_contents($stream);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
 
         $fileInfo = new finfo(FILEINFO_MIME);
@@ -118,7 +121,7 @@ class File
         $prefix = strval(bin2hex(mb_strcut($stream, 0, 10)));
 
         foreach (self::$signatures as $signature => $extension) {
-            if (0 === strpos($prefix, strval($signature))) {
+            if (strpos($prefix, strval($signature)) === 0) {
                 return $extension;
             }
         }

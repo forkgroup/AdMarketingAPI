@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Gdt\OAuth;
 
 use AdMarketingAPI\Kernel\AccessToken;
 use AdMarketingAPI\Kernel\Contracts\AccessTokenInterface;
 use AdMarketingAPI\Kernel\Exceptions\RuntimeException;
-use Psr\Http\Message\RequestInterface;
 
 class OAuth extends AccessToken
 {
@@ -17,13 +20,13 @@ class OAuth extends AccessToken
     /**
      * @var string
      */
-    protected $endpointToGetToken = "oauth/token";
+    protected $endpointToGetToken = 'oauth/token';
 
     /**
-     * 获取 Authorization Code
+     * 获取 Authorization Code.
      * @var string
      */
-    protected $authorizeUrl = "https://developers.e.qq.com/oauth/authorize";
+    protected $authorizeUrl = 'https://developers.e.qq.com/oauth/authorize';
 
     /**
      * OceanEngine OAuth2.0 URL.
@@ -44,7 +47,7 @@ class OAuth extends AccessToken
     {
         $query = http_build_query($this->getCodeFields($state), '', '&', PHP_QUERY_RFC1738);
 
-        return $url.'?'.$query;
+        return $url . '?' . $query;
     }
 
     /**
@@ -60,9 +63,6 @@ class OAuth extends AccessToken
         ];
     }
 
-    /**
-     * @return array
-     */
     protected function getCredentials(): array
     {
         $credentials = [
@@ -79,38 +79,33 @@ class OAuth extends AccessToken
             if ($refreshToken) {
                 $credentials['grant_type'] = 'refresh_token';
                 $credentials['refresh_token'] = $refreshToken['refresh_token'];
-            } 
+            }
         } else {
             // get access token by auth_code
             $credentials['authorization_code'] = $auth_code;
         }
-    
+
         return $credentials;
     }
 
-    /**
-     * @param array $token
-     *
-     * @return \AdMarketingAPI\Kernel\Contracts\AccessTokenInterface
-     */
     protected function setToken(array $token): AccessTokenInterface
     {
-        if (!empty($token['authorizer_info']['account_id'])) {
+        if (! empty($token['authorizer_info']['account_id'])) {
             $this->app['config']->set('account_id', $token['authorizer_info']['account_id']);
         }
         $cache = $this->getCache();
         // access token
         $accessTokenKey = $this->getCacheKey('access_token');
-       
+
         $cache->set($accessTokenKey, [
             $this->tokenKey => $token['access_token'],
             'expires_in' => $token['access_token_expires_in'],
         ], $token['access_token_expires_in'] - $this->safeSeconds);
 
-        if (!$cache->has($accessTokenKey)) {
+        if (! $cache->has($accessTokenKey)) {
             throw new RuntimeException('Failed to cache access token.');
         }
-        if (!empty($token['refresh_token'])) {
+        if (! empty($token['refresh_token'])) {
             // refresh token
             $refreshTokenKey = $this->getCacheKey('refresh_token');
             $cache->set($refreshTokenKey, [
@@ -118,7 +113,7 @@ class OAuth extends AccessToken
                 'expires_in' => $token['refresh_token_expires_in'],
             ], $token['refresh_token_expires_in'] - $this->safeSeconds);
 
-            if (!$cache->has($refreshTokenKey)) {
+            if (! $cache->has($refreshTokenKey)) {
                 throw new RuntimeException('Failed to cache refresh token.');
             }
         }

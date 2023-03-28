@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel\Providers;
 
 use Pimple\Container;
@@ -8,7 +12,6 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class EventDispatcherServiceProvider.
- *
  */
 class EventDispatcherServiceProvider implements ServiceProviderInterface
 {

@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel\Supports\Traits;
 
 use AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException;
@@ -12,7 +16,6 @@ use Symfony\Component\Cache\Simple\FilesystemCache;
 
 /**
  * Trait InteractsWithCache.
- *
  */
 trait InteractsWithCache
 {
@@ -49,7 +52,7 @@ trait InteractsWithCache
     /**
      * Set cache instance.
      *
-     * @param \Psr\SimpleCache\CacheInterface|\Psr\Cache\CacheItemPoolInterface $cache
+     * @param \Psr\Cache\CacheItemPoolInterface|\Psr\SimpleCache\CacheInterface $cache
      *
      * @return $this
      *
@@ -59,14 +62,16 @@ trait InteractsWithCache
     {
         if (empty(\array_intersect([SimpleCacheInterface::class, CacheItemPoolInterface::class], \class_implements($cache)))) {
             throw new InvalidArgumentException(
-                \sprintf('The cache instance must implements %s or %s interface.',
-                    SimpleCacheInterface::class, CacheItemPoolInterface::class
+                \sprintf(
+                    'The cache instance must implements %s or %s interface.',
+                    SimpleCacheInterface::class,
+                    CacheItemPoolInterface::class
                 )
             );
         }
 
         if ($cache instanceof CacheItemPoolInterface) {
-            if (!$this->isSymfony43()) {
+            if (! $this->isSymfony43()) {
                 throw new InvalidArgumentException(sprintf('The cache instance must implements %s', SimpleCacheInterface::class));
             }
             $cache = new Psr16Cache($cache);
@@ -89,9 +94,6 @@ trait InteractsWithCache
         return new FilesystemCache();
     }
 
-    /**
-     * @return bool
-     */
     protected function isSymfony43(): bool
     {
         return \class_exists('Symfony\Component\Cache\Psr16Cache');

@@ -1,7 +1,9 @@
 <?php
 
-
-
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel\Supports;
 
 use ArrayAccess;
@@ -10,7 +12,6 @@ use IteratorAggregate;
 
 /**
  * Class ArrayAccessible.
- *
  */
 class ArrayAccessible implements ArrayAccess, IteratorAggregate
 {
@@ -33,7 +34,7 @@ class ArrayAccessible implements ArrayAccess, IteratorAggregate
 
     public function offsetSet($offset, $value)
     {
-        if (null === $offset) {
+        if ($offset === null) {
             $this->array[] = $value;
         } else {
             $this->array[$offset] = $value;

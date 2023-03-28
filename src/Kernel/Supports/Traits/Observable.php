@@ -1,7 +1,9 @@
 <?php
 
-
-
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel\Supports\Traits;
 
 use AdMarketingAPI\Kernel\Clauses\Clause;
@@ -10,11 +12,13 @@ use AdMarketingAPI\Kernel\Decorators\FinallyResult;
 use AdMarketingAPI\Kernel\Decorators\TerminateResult;
 use AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException;
 use AdMarketingAPI\Kernel\ServiceContainer;
+use Closure;
+use Exception;
+use ReflectionClass;
+use ReflectionException;
 
 /**
  * Trait Observable.
- *
- * @author overtrue <i@overtrue.me>
  */
 trait Observable
 {
@@ -29,19 +33,19 @@ trait Observable
     protected $clauses = [];
 
     /**
-     * @param \Closure|EventHandlerInterface|callable|string $handler
-     * @param \Closure|EventHandlerInterface|callable|string $condition
+     * @param callable|Closure|EventHandlerInterface|string $handler
+     * @param callable|Closure|EventHandlerInterface|string $condition
      *
      * @return \AdMarketingAPI\Kernel\Clauses\Clause
      *
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function push($handler, $condition = '*')
     {
-        list($handler, $condition) = $this->resolveHandlerAndCondition($handler, $condition);
+        [$handler, $condition] = $this->resolveHandlerAndCondition($handler, $condition);
 
-        if (!isset($this->handlers[$condition])) {
+        if (! isset($this->handlers[$condition])) {
             $this->handlers[$condition] = [];
         }
 
@@ -51,19 +55,19 @@ trait Observable
     }
 
     /**
-     * @param \Closure|EventHandlerInterface|string $handler
-     * @param \Closure|EventHandlerInterface|string $condition
+     * @param Closure|EventHandlerInterface|string $handler
+     * @param Closure|EventHandlerInterface|string $condition
      *
      * @return \AdMarketingAPI\Kernel\Clauses\Clause
      *
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function unshift($handler, $condition = '*')
     {
-        list($handler, $condition) = $this->resolveHandlerAndCondition($handler, $condition);
+        [$handler, $condition] = $this->resolveHandlerAndCondition($handler, $condition);
 
-        if (!isset($this->handlers[$condition])) {
+        if (! isset($this->handlers[$condition])) {
             $this->handlers[$condition] = [];
         }
 
@@ -73,13 +77,13 @@ trait Observable
     }
 
     /**
-     * @param string                                $condition
-     * @param \Closure|EventHandlerInterface|string $handler
+     * @param string $condition
+     * @param Closure|EventHandlerInterface|string $handler
      *
      * @return \AdMarketingAPI\Kernel\Clauses\Clause
      *
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function observe($condition, $handler)
     {
@@ -87,13 +91,13 @@ trait Observable
     }
 
     /**
-     * @param string                                $condition
-     * @param \Closure|EventHandlerInterface|string $handler
+     * @param string $condition
+     * @param Closure|EventHandlerInterface|string $handler
      *
      * @return \AdMarketingAPI\Kernel\Clauses\Clause
      *
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function on($condition, $handler)
     {
@@ -101,10 +105,10 @@ trait Observable
     }
 
     /**
-     * @param string|int $event
-     * @param mixed      ...$payload
+     * @param int|string $event
+     * @param mixed ...$payload
      *
-     * @return mixed|null
+     * @return null|mixed
      */
     public function dispatch($event, $payload)
     {
@@ -112,17 +116,17 @@ trait Observable
     }
 
     /**
-     * @param string|int $event
-     * @param mixed      ...$payload
+     * @param int|string $event
+     * @param mixed ...$payload
      *
-     * @return mixed|null
+     * @return null|mixed
      */
     public function notify($event, $payload)
     {
         $result = null;
 
         foreach ($this->handlers as $condition => $handlers) {
-            if ('*' === $condition || ($condition & $event) === $event) {
+            if ($condition === '*' || ($condition & $event) === $event) {
                 foreach ($handlers as $handler) {
                     if ($clause = $this->clauses[$this->getHandlerHash($handler)] ?? null) {
                         if ($clause->intercepted($payload)) {
@@ -135,11 +139,11 @@ trait Observable
                     switch (true) {
                         case $response instanceof TerminateResult:
                             return $response->content;
-                        case true === $response:
+                        case $response === true:
                             continue 2;
-                        case false === $response:
+                        case $response === false:
                             break 2;
-                        case !empty($response) && !($result instanceof FinallyResult):
+                        case ! empty($response) && ! ($result instanceof FinallyResult):
                             $result = $response;
                     }
                 }
@@ -159,8 +163,6 @@ trait Observable
 
     /**
      * @param mixed $handler
-     *
-     * @return \AdMarketingAPI\Kernel\Clauses\Clause
      */
     protected function newClause($handler): Clause
     {
@@ -180,16 +182,15 @@ trait Observable
 
         if (is_array($handler)) {
             return is_string($handler[0])
-                ? $handler[0].'::'.$handler[1]
-                : get_class($handler[0]).$handler[1];
+                ? $handler[0] . '::' . $handler[1]
+                : get_class($handler[0]) . $handler[1];
         }
 
         return spl_object_hash($handler);
     }
 
     /**
-     * @param callable $handler
-     * @param mixed    $payload
+     * @param mixed $payload
      *
      * @return mixed
      */
@@ -197,9 +198,9 @@ trait Observable
     {
         try {
             return call_user_func_array($handler, [$payload]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if (property_exists($this, 'app') && $this->app instanceof ServiceContainer) {
-                $this->app['logger']->error($e->getCode().': '.$e->getMessage(), [
+                $this->app['logger']->error($e->getCode() . ': ' . $e->getMessage(), [
                     'code' => $e->getCode(),
                     'message' => $e->getMessage(),
                     'file' => $e->getFile(),
@@ -212,10 +213,10 @@ trait Observable
     /**
      * @param mixed $handler
      *
-     * @return \Closure
+     * @return Closure
      *
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     protected function makeClosure($handler)
     {
@@ -224,11 +225,11 @@ trait Observable
         }
 
         if (is_string($handler)) {
-            if (!class_exists($handler)) {
+            if (! class_exists($handler)) {
                 throw new InvalidArgumentException(sprintf('Class "%s" not exists.', $handler));
             }
 
-            if (!in_array(EventHandlerInterface::class, (new \ReflectionClass($handler))->getInterfaceNames(), true)) {
+            if (! in_array(EventHandlerInterface::class, (new ReflectionClass($handler))->getInterfaceNames(), true)) {
                 throw new InvalidArgumentException(sprintf('Class "%s" not an instance of "%s".', $handler, EventHandlerInterface::class));
             }
 
@@ -250,15 +251,13 @@ trait Observable
      * @param mixed $handler
      * @param mixed $condition
      *
-     * @return array
-     *
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     protected function resolveHandlerAndCondition($handler, $condition): array
     {
-        if (is_int($handler) || (is_string($handler) && !class_exists($handler))) {
-            list($handler, $condition) = [$condition, $handler];
+        if (is_int($handler) || (is_string($handler) && ! class_exists($handler))) {
+            [$handler, $condition] = [$condition, $handler];
         }
 
         return [$this->makeClosure($handler), $condition];

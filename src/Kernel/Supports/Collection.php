@@ -1,7 +1,9 @@
 <?php
 
-
-
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel\Supports;
 
 use ArrayAccess;
@@ -25,14 +27,77 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
     /**
      * set data.
-     *
-     * @param array $items
      */
     public function __construct(array $items = [])
     {
         foreach ($items as $key => $value) {
             $this->set($key, $value);
         }
+    }
+
+    /**
+     * To string.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->toJson();
+    }
+
+    /**
+     * Get a data by key.
+     *
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public function __get($key)
+    {
+        return $this->get($key);
+    }
+
+    /**
+     * Assigns a value to the specified data.
+     *
+     * @param string $key
+     * @param mixed $value
+     */
+    public function __set($key, $value)
+    {
+        $this->set($key, $value);
+    }
+
+    /**
+     * Whether or not an data exists by key.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        return $this->has($key);
+    }
+
+    /**
+     * Unset an data by key.
+     *
+     * @param string $key
+     */
+    public function __unset($key)
+    {
+        $this->forget($key);
+    }
+
+    /**
+     * var_export.
+     *
+     * @return array
+     */
+    public function __set_state()
+    {
+        return $this->all();
     }
 
     /**
@@ -48,8 +113,6 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     /**
      * Return specific items.
      *
-     * @param array $keys
-     *
      * @return \EasyWeChat\Kernel\Support\Collection
      */
     public function only(array $keys)
@@ -59,7 +122,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
         foreach ($keys as $key) {
             $value = $this->get($key);
 
-            if (!is_null($value)) {
+            if (! is_null($value)) {
                 $return[$key] = $value;
             }
         }
@@ -84,7 +147,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     /**
      * Merge data.
      *
-     * @param Collection|array $items
+     * @param array|Collection $items
      *
      * @return \EasyWeChat\Kernel\Support\Collection
      */
@@ -108,7 +171,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      */
     public function has($key)
     {
-        return !is_null(Arr::get($this->items, $key));
+        return ! is_null(Arr::get($this->items, $key));
     }
 
     /**
@@ -139,7 +202,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      * add the item value.
      *
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      */
     public function add($key, $value)
     {
@@ -150,7 +213,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      * Set the item value.
      *
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      */
     public function set($key, $value)
     {
@@ -161,7 +224,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      * Retrieve item from Collection.
      *
      * @param string $key
-     * @param mixed  $default
+     * @param mixed $default
      *
      * @return mixed
      */
@@ -203,16 +266,6 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     }
 
     /**
-     * To string.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->toJson();
-    }
-
-    /**
      * (PHP 5 &gt;= 5.4.0)<br/>
      * Specify data which should be serialized to JSON.
      *
@@ -245,8 +298,8 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      *
      * @see http://php.net/manual/en/iteratoraggregate.getiterator.php
      *
-     * @return \ArrayIterator An instance of an object implementing <b>Iterator</b> or
-     *                        <b>Traversable</b>
+     * @return ArrayIterator An instance of an object implementing <b>Iterator</b> or
+     *                       <b>Traversable</b>
      */
     public function getIterator()
     {
@@ -284,61 +337,6 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     public function unserialize($serialized)
     {
         return $this->items = unserialize($serialized);
-    }
-
-    /**
-     * Get a data by key.
-     *
-     * @param string $key
-     *
-     * @return mixed
-     */
-    public function __get($key)
-    {
-        return $this->get($key);
-    }
-
-    /**
-     * Assigns a value to the specified data.
-     *
-     * @param string $key
-     * @param mixed  $value
-     */
-    public function __set($key, $value)
-    {
-        $this->set($key, $value);
-    }
-
-    /**
-     * Whether or not an data exists by key.
-     *
-     * @param string $key
-     *
-     * @return bool
-     */
-    public function __isset($key)
-    {
-        return $this->has($key);
-    }
-
-    /**
-     * Unset an data by key.
-     *
-     * @param string $key
-     */
-    public function __unset($key)
-    {
-        $this->forget($key);
-    }
-
-    /**
-     * var_export.
-     *
-     * @return array
-     */
-    public function __set_state()
-    {
-        return $this->all();
     }
 
     /**
@@ -402,9 +400,9 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      * @param mixed $offset <p>
      *                      The offset to assign the value to.
      *                      </p>
-     * @param mixed $value  <p>
-     *                      The value to set.
-     *                      </p>
+     * @param mixed $value <p>
+     *                     The value to set.
+     *                     </p>
      */
     public function offsetSet($offset, $value)
     {

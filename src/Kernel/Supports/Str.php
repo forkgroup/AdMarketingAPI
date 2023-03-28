@@ -1,10 +1,13 @@
 <?php
 
-
-
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel\Supports;
 
 use EasyAdm\Kernel\Exceptions\RuntimeException;
+use Exception;
 
 /**
  * Class Str.
@@ -83,7 +86,7 @@ class Str
      *
      * @codeCoverageIgnore
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public static function randomBytes($length = 16)
     {
@@ -91,7 +94,7 @@ class Str
             $bytes = random_bytes($length);
         } elseif (function_exists('openssl_random_pseudo_bytes')) {
             $bytes = openssl_random_pseudo_bytes($length, $strong);
-            if (false === $bytes || false === $strong) {
+            if ($bytes === false || $strong === false) {
                 throw new RuntimeException('Unable to generate random string.');
             }
         } else {
@@ -151,14 +154,14 @@ class Str
      */
     public static function snake($value, $delimiter = '_')
     {
-        $key = $value.$delimiter;
+        $key = $value . $delimiter;
 
         if (isset(static::$snakeCache[$key])) {
             return static::$snakeCache[$key];
         }
 
-        if (!ctype_lower($value)) {
-            $value = strtolower(preg_replace('/(.)(?=[A-Z])/', '$1'.$delimiter, $value));
+        if (! ctype_lower($value)) {
+            $value = strtolower(preg_replace('/(.)(?=[A-Z])/', '$1' . $delimiter, $value));
         }
 
         return static::$snakeCache[$key] = trim($value, '_');

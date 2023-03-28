@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\OceanEngine;
 
 use AdMarketingAPI\Kernel\BaseService;
@@ -9,10 +13,6 @@ class OceanEngine extends BaseService
 {
     /**
      * Palyload build.
-     *
-     * @param array $prepends
-     *
-     * @return array
      */
     protected function build(array $prepends = []): array
     {
@@ -21,7 +21,7 @@ class OceanEngine extends BaseService
         if (isset($palyload['advertiser_id'])) {
             $this->app['config']->set('account_id', $palyload['advertiser_id']);
         }
-        
+
         if (isset($palyload['advertiser_ids'])) {
             if (count($palyload['advertiser_ids']) > 100) {
                 throw new InvalidArgumentException('The advertiser_ids may not have more than 100 items');
@@ -29,19 +29,19 @@ class OceanEngine extends BaseService
             $this->app['config']->set('account_id', $palyload['advertiser_ids'][0]);
         }
 
-        if (!empty($palyload['creative_ids'])) {
+        if (! empty($palyload['creative_ids'])) {
             if (count($palyload['creative_ids']) > 100) {
                 throw new InvalidArgumentException('The creative_ids may not have more than 100 items');
             }
         }
 
-        if (!empty($palyload['campaign_ids'])) {
+        if (! empty($palyload['campaign_ids'])) {
             if (count($palyload['campaign_ids']) > 100) {
                 throw new InvalidArgumentException('The campaign_ids may not have more than 100 items');
             }
         }
 
-        if (!empty($palyload['ad_ids'])) {
+        if (! empty($palyload['ad_ids'])) {
             if (count($palyload['ad_ids']) > 100) {
                 throw new InvalidArgumentException('The ad_ids may not have more than 100 items');
             }

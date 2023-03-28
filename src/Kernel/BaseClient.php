@@ -1,21 +1,24 @@
 <?php
 
-
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel;
 
-use Psr\Log\LogLevel;
+use AdMarketingAPI\Kernel\Contracts\AccessTokenInterface;
+use AdMarketingAPI\Kernel\Exceptions\HttpException;
+use AdMarketingAPI\Kernel\Http\Response;
+use AdMarketingAPI\Kernel\Supports\Traits\HasHttpRequests;
+use Closure;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use AdMarketingAPI\Kernel\Http\Response;
-use AdMarketingAPI\Kernel\Supports\Traits\HasHttpRequests;
-use AdMarketingAPI\Kernel\Contracts\AccessTokenInterface;
-use AdMarketingAPI\Kernel\Exceptions\HttpException;
+use Psr\Log\LogLevel;
 
 /**
  * Class BaseClient.
- *
  */
 class BaseClient
 {
@@ -36,7 +39,6 @@ class BaseClient
      */
     protected $baseUri;
 
-
     /**
      * The type of the encoding in the query.
      *
@@ -44,12 +46,10 @@ class BaseClient
      */
     protected $encodingType = PHP_QUERY_RFC1738;
 
-
     /**
      * BaseClient constructor.
      *
-     * @param \AdMarketingAPI\Kernel\ServiceContainer                    $app
-     * @param \AdMarketingAPI\Kernel\Contracts\AccessTokenInterface|null $accessToken
+     * @param \AdMarketingAPI\Kernel\ServiceContainer $app
      */
     public function __construct(ServiceContainer $app, AccessTokenInterface $accessToken = null)
     {
@@ -60,10 +60,7 @@ class BaseClient
     /**
      * GET request.
      *
-     * @param string $url
-     * @param array  $query
-     *
-     * @return \Psr\Http\Message\ResponseInterface|\AdMarketingAPI\Kernel\Supports\Collection|array|object|string
+     * @return \AdMarketingAPI\Kernel\Supports\Collection|array|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidConfigException
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -76,10 +73,7 @@ class BaseClient
     /**
      * POST request.
      *
-     * @param string $url
-     * @param array  $data
-     *
-     * @return \Psr\Http\Message\ResponseInterface|\AdMarketingAPI\Kernel\Supports\Collection|array|object|string
+     * @return \AdMarketingAPI\Kernel\Supports\Collection|array|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidConfigException
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -92,11 +86,7 @@ class BaseClient
     /**
      * JSON request.
      *
-     * @param string $url
-     * @param array  $data
-     * @param array  $query
-     *
-     * @return \Psr\Http\Message\ResponseInterface|\AdMarketingAPI\Kernel\Supports\Collection|array|object|string
+     * @return \AdMarketingAPI\Kernel\Supports\Collection|array|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidConfigException
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -109,12 +99,7 @@ class BaseClient
     /**
      * Upload file.
      *
-     * @param string $url
-     * @param array  $files
-     * @param array  $form
-     * @param array  $query
-     *
-     * @return \Psr\Http\Message\ResponseInterface|\AdMarketingAPI\Kernel\Supports\Collection|array|object|string
+     * @return \AdMarketingAPI\Kernel\Supports\Collection|array|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidConfigException
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -137,17 +122,12 @@ class BaseClient
         return $this->request($url, 'POST', ['query' => $query, 'multipart' => $multipart, 'connect_timeout' => 30, 'timeout' => 30, 'read_timeout' => 30]);
     }
 
-    /**
-     * @return AccessTokenInterface
-     */
     public function getAccessToken(): AccessTokenInterface
     {
         return $this->accessToken;
     }
 
     /**
-     * @param \AdMarketingAPI\Kernel\Contracts\AccessTokenInterface $accessToken
-     *
      * @return $this
      */
     public function setAccessToken(AccessTokenInterface $accessToken)
@@ -158,11 +138,7 @@ class BaseClient
     }
 
     /**
-     * @param string $url
-     * @param string $method
-     * @param array  $options
-     *
-     * @return \Psr\Http\Message\ResponseInterface|\AdMarketingAPI\Kernel\Supports\Collection|array|object|string
+     * @return \AdMarketingAPI\Kernel\Supports\Collection|array|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidConfigException
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -181,35 +157,6 @@ class BaseClient
     }
 
     /**
-     * processingApiResult.
-     *
-     *
-     * @param  string $endpoint
-     * @param  ResponseInterface $response
-     *
-     * @throws RuntimeException
-     *
-     * @return array
-     */
-    protected function proccessApiResult(string $url, ResponseInterface $response)
-    {
-        $result = $this->castResponseToType($response);
-        if (!isset($result['code']) || $result['code'] != 0) {
-            throw new HttpException(
-                "Request [{$url}] fail:".json_encode($result,JSON_UNESCAPED_UNICODE),
-                $response,
-                $result
-            );
-        }
-
-        return $result['data'];
-    }
-
-    /**
-     * @param string $url
-     * @param string $method
-     * @param array  $options
-     *
      * @return \AdMarketingAPI\Kernel\Http\Response
      *
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidConfigException
@@ -218,6 +165,28 @@ class BaseClient
     public function requestRaw(string $url, string $method = 'GET', array $options = [])
     {
         return Response::buildFromPsrResponse($this->request($url, $method, $options, true));
+    }
+
+    /**
+     * processingApiResult.
+     *
+     * @param string $endpoint
+     *
+     * @return array
+     * @throws RuntimeException
+     */
+    protected function proccessApiResult(string $url, ResponseInterface $response)
+    {
+        $result = $this->castResponseToType($response);
+        if (! isset($result['code']) || $result['code'] != 0) {
+            throw new HttpException(
+                "Request [{$url}] fail:" . json_encode($result, JSON_UNESCAPED_UNICODE),
+                $response,
+                $result
+            );
+        }
+
+        return $result['data'];
     }
 
     /**
@@ -236,7 +205,7 @@ class BaseClient
     /**
      * Attache access token to request query.
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function accessTokenMiddleware()
     {
@@ -254,7 +223,7 @@ class BaseClient
     /**
      * Log the request.
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function logMiddleware()
     {
@@ -266,7 +235,7 @@ class BaseClient
     /**
      * Return retry middleware.
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function retryMiddleware()
     {
@@ -280,7 +249,7 @@ class BaseClient
                 // Retry on server errors
                 $response = json_decode($body, true);
 
-                if (!empty($response['errcode']) && in_array(abs($response['errcode']), [40001, 40014, 42001], true)) {
+                if (! empty($response['errcode']) && in_array(abs($response['errcode']), [40001, 40014, 42001], true)) {
                     $this->accessToken->refresh();
                     $this->app['logger']->debug('Retrying with refreshed access token.');
 

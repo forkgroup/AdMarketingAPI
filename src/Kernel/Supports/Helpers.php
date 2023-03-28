@@ -1,17 +1,22 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel\Supports;
+
+use DateTime;
 
 /*
  * helpers.
  *
- * 
+ *
  */
 
 /**
  * Generate a signature.
  *
- * @param array  $attributes
  * @param string $key
  * @param string $encryptMethod
  *
@@ -33,7 +38,7 @@ function generate_sign(array $attributes, $key, $encryptMethod = 'md5')
  */
 function get_client_ip()
 {
-    if (!empty($_SERVER['REMOTE_ADDR'])) {
+    if (! empty($_SERVER['REMOTE_ADDR'])) {
         $ip = $_SERVER['REMOTE_ADDR'];
     } else {
         // for php-cli(phpunit etc.)
@@ -50,9 +55,9 @@ function get_client_ip()
  */
 function get_server_ip()
 {
-    if (!empty($_SERVER['SERVER_ADDR'])) {
+    if (! empty($_SERVER['SERVER_ADDR'])) {
         $ip = $_SERVER['SERVER_ADDR'];
-    } elseif (!empty($_SERVER['SERVER_NAME'])) {
+    } elseif (! empty($_SERVER['SERVER_NAME'])) {
         $ip = gethostbyname($_SERVER['SERVER_NAME']);
     } else {
         // for php-cli(phpunit etc.)
@@ -71,11 +76,11 @@ function current_url()
 {
     $protocol = 'http://';
 
-    if ((!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS']) || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? 'http') === 'https') {
+    if ((! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? 'http') === 'https') {
         $protocol = 'https://';
     }
 
-    return $protocol.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+    return $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 }
 
 /**
@@ -112,6 +117,6 @@ function rsa_public_encrypt($content, $publicKey)
  */
 function validate_date_format($date, $format = 'Y-m-d')
 {
-    $d = \DateTime::createFromFormat($format, $date);
+    $d = DateTime::createFromFormat($format, $date);
     return $d && $d->format($format) == $date;
 }

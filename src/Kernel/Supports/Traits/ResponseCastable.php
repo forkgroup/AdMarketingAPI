@@ -1,7 +1,9 @@
 <?php
 
-
-
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel\Supports\Traits;
 
 use AdMarketingAPI\Kernel\Contracts\Arrayable;
@@ -17,10 +19,9 @@ use Psr\Http\Message\ResponseInterface;
 trait ResponseCastable
 {
     /**
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @param string|null                         $type
+     * @param null|string $type
      *
-     * @return array|\AdMarketingAPI\Kernel\Supports\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @return \AdMarketingAPI\Kernel\Supports\Collection|array|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidConfigException
      */
@@ -39,7 +40,7 @@ trait ResponseCastable
             case 'raw':
                 return $response;
             default:
-                if (!is_subclass_of($type, Arrayable::class)) {
+                if (! is_subclass_of($type, Arrayable::class)) {
                     throw new InvalidConfigException(sprintf(
                         'Config key "response_type" classname must be an instanceof %s',
                         Arrayable::class
@@ -51,10 +52,10 @@ trait ResponseCastable
     }
 
     /**
-     * @param mixed       $response
-     * @param string|null $type
+     * @param mixed $response
+     * @param null|string $type
      *
-     * @return array|\AdMarketingAPI\Kernel\Supports\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @return \AdMarketingAPI\Kernel\Supports\Collection|array|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidConfigException

@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\OceanEngine\OAuth;
 
 use AdMarketingAPI\Kernel\AccessToken;
@@ -22,7 +26,7 @@ class OAuth extends AccessToken
     /**
      * @var string
      */
-    protected $endpointToGetToken = "open_api/oauth2/access_token/";
+    protected $endpointToGetToken = 'open_api/oauth2/access_token/';
 
     /**
      * OceanEngine OAuth2.0 URL.
@@ -33,9 +37,26 @@ class OAuth extends AccessToken
      */
     public function getAuthUrl($state = '')
     {
-        $url = $this->app->config->get('http.base_uri').'openapi/audit/oauth.html';
+        $url = $this->app->config->get('http.base_uri') . 'openapi/audit/oauth.html';
 
         return $this->buildAuthUrlFromBase($url, $state);
+    }
+
+    /**
+     * @throws \AdMarketingAPI\Kernel\Exceptions\HttpException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidConfigException
+     * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException
+     * @throws \AdMarketingAPI\Kernel\Exceptions\RuntimeException
+     */
+    public function applyToRequest(RequestInterface $request, array $requestOptions = []): RequestInterface
+    {
+        parse_str($request->getUri()->getQuery(), $query);
+        $token = $this->getToken()[$this->tokenKey];
+        $query = http_build_query($query);
+        return $request->withHeader('Access-Token', $token)
+            ->withHeader('Content-Type', 'application/json')
+            ->withUri($request->getUri()->withQuery($query));
     }
 
     /**
@@ -45,7 +66,7 @@ class OAuth extends AccessToken
     {
         $query = http_build_query($this->getCodeFields($state), '', '&', PHP_QUERY_RFC1738);
 
-        return $url.'?'.$query;
+        return $url . '?' . $query;
     }
 
     /**
@@ -61,9 +82,6 @@ class OAuth extends AccessToken
         ];
     }
 
-    /**
-     * @return array
-     */
     protected function getCredentials(): array
     {
         $credentials = [
@@ -80,35 +98,30 @@ class OAuth extends AccessToken
                 $this->endpointToGetToken = 'open_api/oauth2/refresh_token/';
                 $credentials['grant_type'] = 'refresh_token';
                 $credentials['refresh_token'] = $refreshToken['refresh_token'];
-            } 
+            }
         } else {
             // get access token by auth_code
             $credentials['auth_code'] = $auth_code;
         }
-    
+
         return $credentials;
     }
 
-    /**
-     * @param array $token
-     *
-     * @return \AdMarketingAPI\Kernel\Contracts\AccessTokenInterface
-     */
     protected function setToken(array $token): AccessTokenInterface
     {
-        if (!empty($token['advertiser_id'])) {
+        if (! empty($token['advertiser_id'])) {
             $this->app['config']->set('account_id', $token['advertiser_id']);
         }
         $cache = $this->getCache();
         // access token
         $accessTokenKey = $this->getCacheKey('access_token');
-       
+
         $cache->set($accessTokenKey, [
             $this->tokenKey => $token['access_token'],
             'expires_in' => $token['expires_in'],
         ], $token['expires_in'] - $this->safeSeconds);
 
-        if (!$cache->has($accessTokenKey)) {
+        if (! $cache->has($accessTokenKey)) {
             throw new RuntimeException('Failed to cache access token.');
         }
 
@@ -119,32 +132,10 @@ class OAuth extends AccessToken
             'expires_in' => $token['refresh_token_expires_in'],
         ], $token['refresh_token_expires_in'] - $this->safeSeconds);
 
-        if (!$cache->has($refreshTokenKey)) {
+        if (! $cache->has($refreshTokenKey)) {
             throw new RuntimeException('Failed to cache refresh token.');
         }
 
         return $this;
-    }
-
-    /**
-     * @param \Psr\Http\Message\RequestInterface $request
-     * @param array                              $requestOptions
-     *
-     * @return \Psr\Http\Message\RequestInterface
-     *
-     * @throws \AdMarketingAPI\Kernel\Exceptions\HttpException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidConfigException
-     * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException
-     * @throws \AdMarketingAPI\Kernel\Exceptions\RuntimeException
-     */
-    public function applyToRequest(RequestInterface $request, array $requestOptions = []): RequestInterface
-    {
-        parse_str($request->getUri()->getQuery(), $query);
-        $token = $this->getToken()[$this->tokenKey];
-        $query = http_build_query($query);
-        return $request->withHeader('Access-Token', $token)
-                        ->withHeader('Content-Type', "application/json")
-                        ->withUri($request->getUri()->withQuery($query));
     }
 }

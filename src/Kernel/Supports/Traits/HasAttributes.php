@@ -1,10 +1,15 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel\Supports\Traits;
 
 use AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException;
 use AdMarketingAPI\Kernel\Supports\Arr;
 use AdMarketingAPI\Kernel\Supports\Str;
+use BadMethodCallException;
 
 /**
  * Trait Attributes.
@@ -22,9 +27,61 @@ trait HasAttributes
     protected $snakeable = true;
 
     /**
-     * Set Attributes.
+     * Magic call.
      *
-     * @param array $attributes
+     * @param string $method
+     * @param array $args
+     *
+     * @return $this
+     */
+    public function __call($method, $args)
+    {
+        if (stripos($method, 'with') === 0) {
+            return $this->with(substr($method, 4), array_shift($args));
+        }
+
+        throw new BadMethodCallException(sprintf('Method "%s" does not exists.', $method));
+    }
+
+    /**
+     * Magic get.
+     *
+     * @param string $property
+     *
+     * @return mixed
+     */
+    public function __get($property)
+    {
+        return $this->get($property);
+    }
+
+    /**
+     * Magic set.
+     *
+     * @param string $property
+     * @param mixed $value
+     *
+     * @return $this
+     */
+    public function __set($property, $value)
+    {
+        return $this->with($property, $value);
+    }
+
+    /**
+     * Whether or not an data exists by key.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        return isset($this->attributes[$key]);
+    }
+
+    /**
+     * Set Attributes.
      *
      * @return $this
      */
@@ -54,7 +111,7 @@ trait HasAttributes
      * Get attribute.
      *
      * @param string $attribute
-     * @param mixed  $default
+     * @param mixed $default
      *
      * @return mixed
      */
@@ -85,7 +142,7 @@ trait HasAttributes
      * Set attribute.
      *
      * @param string $attribute
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return $this
      */
@@ -102,7 +159,7 @@ trait HasAttributes
      * Override parent set() method.
      *
      * @param string $attribute
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return $this
      */
@@ -117,7 +174,7 @@ trait HasAttributes
      * Override parent get() method.
      *
      * @param string $attribute
-     * @param mixed  $default
+     * @param mixed $default
      *
      * @return mixed
      */
@@ -127,8 +184,6 @@ trait HasAttributes
     }
 
     /**
-     * @param string $key
-     *
      * @return bool
      */
     public function has(string $key)
@@ -137,8 +192,6 @@ trait HasAttributes
     }
 
     /**
-     * @param array $attributes
-     *
      * @return $this
      */
     public function merge(array $attributes)
@@ -170,60 +223,6 @@ trait HasAttributes
         $this->checkRequiredAttributes();
 
         return $this->attributes;
-    }
-
-    /**
-     * Magic call.
-     *
-     * @param string $method
-     * @param array  $args
-     *
-     * @return $this
-     */
-    public function __call($method, $args)
-    {
-        if (0 === stripos($method, 'with')) {
-            return $this->with(substr($method, 4), array_shift($args));
-        }
-
-        throw new \BadMethodCallException(sprintf('Method "%s" does not exists.', $method));
-    }
-
-    /**
-     * Magic get.
-     *
-     * @param string $property
-     *
-     * @return mixed
-     */
-    public function __get($property)
-    {
-        return $this->get($property);
-    }
-
-    /**
-     * Magic set.
-     *
-     * @param string $property
-     * @param mixed  $value
-     *
-     * @return $this
-     */
-    public function __set($property, $value)
-    {
-        return $this->with($property, $value);
-    }
-
-    /**
-     * Whether or not an data exists by key.
-     *
-     * @param string $key
-     *
-     * @return bool
-     */
-    public function __isset($key)
-    {
-        return isset($this->attributes[$key]);
     }
 
     /**

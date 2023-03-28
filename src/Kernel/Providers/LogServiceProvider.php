@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel\Providers;
 
+use AdMarketingAPI\Kernel\Log\LogManager;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
-use AdMarketingAPI\Kernel\Log\LogManager;
 
 /**
  * Class LoggingServiceProvider.
- * 
  */
 class LogServiceProvider implements ServiceProviderInterface
 {
@@ -25,7 +28,7 @@ class LogServiceProvider implements ServiceProviderInterface
         $pimple['logger'] = $pimple['log'] = function ($app) {
             $config = $this->formatLogConfig($app);
 
-            if (!empty($config)) {
+            if (! empty($config)) {
                 $app->rebind('config', $app['config']->merge($config));
             }
 
@@ -35,7 +38,7 @@ class LogServiceProvider implements ServiceProviderInterface
 
     public function formatLogConfig($app)
     {
-        if (!empty($app['config']->get('log.channels'))) {
+        if (! empty($app['config']->get('log.channels'))) {
             return $app['config']->get('log');
         }
 
@@ -59,7 +62,7 @@ class LogServiceProvider implements ServiceProviderInterface
                 'channels' => [
                     'single' => [
                         'driver' => 'single',
-                        'path' => $app['config']->get('log.file') ?: \sys_get_temp_dir().'/logs/admarketingapi.log',
+                        'path' => $app['config']->get('log.file') ?: \sys_get_temp_dir() . '/logs/admarketingapi.log',
                         'level' => $app['config']->get('log.level', 'debug'),
                     ],
                 ],

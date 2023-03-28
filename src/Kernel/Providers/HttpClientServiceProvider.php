@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel\Providers;
 
 use GuzzleHttp\Client;
@@ -8,7 +12,6 @@ use Pimple\ServiceProviderInterface;
 
 /**
  * Class HttpClientServiceProvider.
- * 
  */
 class HttpClientServiceProvider implements ServiceProviderInterface
 {

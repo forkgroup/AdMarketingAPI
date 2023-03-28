@@ -1,34 +1,34 @@
 <?php
 
-
-
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel\Exceptions;
 
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class HttpException.
- *
  */
 class HttpException extends Exception
 {
     /**
-     * @var \Psr\Http\Message\ResponseInterface|null
+     * @var null|\Psr\Http\Message\ResponseInterface
      */
     public $response;
 
     /**
-     * @var \Psr\Http\Message\ResponseInterface|\AdMarketingAPI\Kernel\Support\Collection|array|object|string|null
+     * @var null|\AdMarketingAPI\Kernel\Support\Collection|array|object|\Psr\Http\Message\ResponseInterface|string
      */
     public $formattedResponse;
 
     /**
      * HttpException constructor.
      *
-     * @param string                                   $message
-     * @param \Psr\Http\Message\ResponseInterface|null $response
-     * @param null                                     $formattedResponse
-     * @param int|null                                 $code
+     * @param string $message
+     * @param null $formattedResponse
+     * @param null|int $code
      */
     public function __construct($message, ResponseInterface $response = null, $formattedResponse = null, $code = null)
     {

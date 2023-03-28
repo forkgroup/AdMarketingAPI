@@ -1,18 +1,27 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Tests;
 
 use AdMarketingAPI\Factory;
+use Redis;
 use Symfony\Component\Cache\Simple\RedisCache;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class OceanEngineTest extends TestCase
 {
     public function app()
     {
         $config = [
-            'account_id' => "account_id",
-            'app_id' => "xxxxxx",
-            'secret' => "xxxxxxxxxxxxxxxxx",
+            'account_id' => 'account_id',
+            'app_id' => 'xxxxxx',
+            'secret' => 'xxxxxxxxxxxxxxxxx',
             'oauth' => [
                 /*
                  *
@@ -38,10 +47,10 @@ class OceanEngineTest extends TestCase
             ],
             'mode' => 'normal',
         ];
-       
+
         $app = Factory::oceanEngine($config);
 
-        $redis = new \Redis();
+        $redis = new Redis();
         $redis->connect('redis_node', 6379);
         // 创建缓存实例
         $cache = new RedisCache($redis);

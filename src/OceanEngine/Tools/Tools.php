@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\OceanEngine\Creative;
 
 use AdMarketingAPI\OceanEngine\OceanEngine;
@@ -10,9 +14,6 @@ class Tools extends OceanEngine
      * 获取计划诊断详情.
      *
      * @see https://ad.oceanengine.com/openapi/doc/index.html?id=326
-     *
-     * @param int $advertiser_id
-     * @param array $ad_ids
      *
      * @return array
      */
@@ -31,9 +32,6 @@ class Tools extends OceanEngine
      *
      * @see https://ad.oceanengine.com/openapi/doc/index.html?id=327
      *
-     * @param int $advertiser_id
-     * @param int $ad_id
-     *
      * @return array
      */
     public function diagnosis_curve(int $advertiser_id, int $ad_id)
@@ -50,10 +48,6 @@ class Tools extends OceanEngine
      * 获取建站列表.
      *
      * @see https://ad.oceanengine.com/openapi/doc/index.html?id=387
-     *
-     * @param int $advertiser_id
-     * @param int $page
-     * @param int $pageSize
      *
      * @return array
      */

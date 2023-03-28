@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Kernel;
 
 use AdMarketingAPI\Kernel\Contracts\AccessTokenInterface;
 use AdMarketingAPI\Kernel\Exceptions\HttpException;
 use AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException;
-use AdMarketingAPI\Kernel\Exceptions\InvalidConfigException;
 use AdMarketingAPI\Kernel\Supports\Traits\HasHttpRequests;
 use AdMarketingAPI\Kernel\Supports\Traits\InteractsWithCache;
 use Psr\Http\Message\RequestInterface;
@@ -75,10 +78,6 @@ abstract class AccessToken implements AccessTokenInterface
     }
 
     /**
-     * @param bool $refresh
-     *
-     * @return array
-     *
      * @throws \AdMarketingAPI\Kernel\Exceptions\HttpException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidConfigException
@@ -87,7 +86,7 @@ abstract class AccessToken implements AccessTokenInterface
      */
     public function getToken(bool $refresh = false): array
     {
-        if (!$refresh && $token = $this->getCachedToken($this->tokenKey)) {
+        if (! $refresh && $token = $this->getCachedToken($this->tokenKey)) {
             return $token;
         }
 
@@ -119,8 +118,6 @@ abstract class AccessToken implements AccessTokenInterface
     }
 
     /**
-     * @return \AdMarketingAPI\Kernel\Contracts\AccessTokenInterface
-     *
      * @throws \AdMarketingAPI\Kernel\Exceptions\HttpException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidConfigException
@@ -135,10 +132,9 @@ abstract class AccessToken implements AccessTokenInterface
     }
 
     /**
-     * @param array $credentials
-     * @param bool  $toArray
+     * @param bool $toArray
      *
-     * @return \Psr\Http\Message\ResponseInterface|\AdMarketingAPI\Kernel\Support\Collection|array|object|string
+     * @return \AdMarketingAPI\Kernel\Support\Collection|array|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \AdMarketingAPI\Kernel\Exceptions\HttpException
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidConfigException
@@ -151,18 +147,13 @@ abstract class AccessToken implements AccessTokenInterface
         $formatted = $this->castResponseToType($response, $this->app['config']->get('response_type'));
 
         if (empty($result['data'][$this->tokenKey])) {
-            throw new HttpException('Request access_token fail: '.json_encode($result, JSON_UNESCAPED_UNICODE), $response, $formatted);
+            throw new HttpException('Request access_token fail: ' . json_encode($result, JSON_UNESCAPED_UNICODE), $response, $formatted);
         }
 
         return $toArray ? $result['data'] : $formatted['data'];
     }
 
     /**
-     * @param \Psr\Http\Message\RequestInterface $request
-     * @param array                              $requestOptions
-     *
-     * @return \Psr\Http\Message\RequestInterface
-     *
      * @throws \AdMarketingAPI\Kernel\Exceptions\HttpException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidConfigException
@@ -179,55 +170,6 @@ abstract class AccessToken implements AccessTokenInterface
     }
 
     /**
-     * Send http request.
-     *
-     * @param array $credentials
-     *
-     * @return ResponseInterface
-     *
-     * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    protected function sendRequest(array $credentials): ResponseInterface
-    {
-        $options = [
-            ('GET' === $this->requestMethod) ? 'query' : 'json' => $credentials,
-        ];
-
-        return $this->setHttpClient($this->app['http_client'])
-            ->request($this->getEndpoint(), $this->requestMethod, $options);
-    }
-
-    /**
-     * @param string $tokenKey
-     *
-     * @return string
-     */
-    protected function getCacheKey(string $tokenKey)
-    {
-        $account_id = $this->app['config']->get('account_id');
-        return $this->cachePrefix."{$tokenKey}.{$account_id}";
-    }
-
-    /**
-     * The request query will be used to add to the request.
-     *
-     * @return array
-     *
-     * @throws \AdMarketingAPI\Kernel\Exceptions\HttpException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidConfigException
-     * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException
-     * @throws \AdMarketingAPI\Kernel\Exceptions\RuntimeException
-     */
-    protected function getQuery(): array
-    {
-        return [$this->queryName ?? $this->tokenKey => $this->getToken()[$this->tokenKey]];
-    }
-
-    /**
-     * @return string
-     *
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException
      */
     public function getEndpoint(): string
@@ -249,12 +191,12 @@ abstract class AccessToken implements AccessTokenInterface
     public function prepareCallbackUrl()
     {
         $callback = $this->app['config']->get('oauth.redirect_uri');
-        if (0 === stripos($callback, 'http')) {
+        if (stripos($callback, 'http') === 0) {
             return $callback;
         }
         $baseUrl = $this->app['request']->getSchemeAndHttpHost();
 
-        return $baseUrl.'/'.ltrim($callback, '/');
+        return $baseUrl . '/' . ltrim($callback, '/');
     }
 
     /**
@@ -266,18 +208,51 @@ abstract class AccessToken implements AccessTokenInterface
     }
 
     /**
-     * Credential for get token.
+     * Send http request.
      *
-     * @return array
+     * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    protected function sendRequest(array $credentials): ResponseInterface
+    {
+        $options = [
+            ($this->requestMethod === 'GET') ? 'query' : 'json' => $credentials,
+        ];
+
+        return $this->setHttpClient($this->app['http_client'])
+            ->request($this->getEndpoint(), $this->requestMethod, $options);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCacheKey(string $tokenKey)
+    {
+        $account_id = $this->app['config']->get('account_id');
+        return $this->cachePrefix . "{$tokenKey}.{$account_id}";
+    }
+
+    /**
+     * The request query will be used to add to the request.
+     *
+     * @throws \AdMarketingAPI\Kernel\Exceptions\HttpException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidConfigException
+     * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException
+     * @throws \AdMarketingAPI\Kernel\Exceptions\RuntimeException
+     */
+    protected function getQuery(): array
+    {
+        return [$this->queryName ?? $this->tokenKey => $this->getToken()[$this->tokenKey]];
+    }
+
+    /**
+     * Credential for get token.
      */
     abstract protected function getCredentials(): array;
 
     /**
      * cache access token and refresh token.
-     *
-     * @param array $token
-     *
-     * @return \AdMarketingAPI\Kernel\Contracts\AccessTokenInterface
      *
      * @throws \AdMarketingAPI\Kernel\Exceptions\InvalidArgumentException
      * @throws \AdMarketingAPI\Kernel\Exceptions\RuntimeException

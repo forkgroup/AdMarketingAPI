@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
+ */
 namespace AdMarketingAPI\Gdt;
 
 use AdMarketingAPI\Kernel\BaseService;
@@ -8,9 +12,6 @@ class Gdt extends BaseService
 {
     /**
      * Palyload build.
-     *
-     * @param array       $prepends
-     * @return array
      */
     protected function build(array $prepends = []): array
     {
@@ -29,7 +30,6 @@ class Gdt extends BaseService
             }
         }
 
-        
         return $palyload;
     }
 }
