@@ -6,7 +6,7 @@ declare(strict_types=1);
  */
 namespace AdMarketingAPI\Kernel\Providers;
 
-use GuzzleHttp\Client;
+use AdMarketingAPI\Kernel\Http\Client;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
