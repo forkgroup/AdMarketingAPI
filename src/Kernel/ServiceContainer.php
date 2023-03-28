@@ -8,9 +8,11 @@ namespace AdMarketingAPI\Kernel;
 
 use Pimple\Container;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @property ?EventDispatcherInterface $events
+ * @property ?ServerRequestInterface $request
  */
 class ServiceContainer extends Container
 {
@@ -111,7 +113,6 @@ class ServiceContainer extends Container
         return array_merge([
             Providers\ConfigServiceProvider::class,
             Providers\LogServiceProvider::class,
-            Providers\RequestServiceProvider::class,
             Providers\HttpClientServiceProvider::class,
         ], $this->providers);
     }

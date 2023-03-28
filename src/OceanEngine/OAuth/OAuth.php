@@ -9,6 +9,7 @@ namespace AdMarketingAPI\OceanEngine\OAuth;
 use AdMarketingAPI\Kernel\AccessToken;
 use AdMarketingAPI\Kernel\Contracts\AccessTokenInterface;
 use AdMarketingAPI\Kernel\Exceptions\RuntimeException;
+use AdMarketingAPI\Kernel\Http\RequestUtil;
 use Psr\Http\Message\RequestInterface;
 
 class OAuth extends AccessToken
@@ -89,7 +90,7 @@ class OAuth extends AccessToken
             'appid' => $this->app['config']['app_id'],
             'secret' => $this->app['config']['secret'],
         ];
-        $auth_code = $this->app->request->get('auth_code');
+        $auth_code = RequestUtil::get($this->app->request, 'auth_code');
         if (empty($auth_code)) {
             // get refresh_token form cache
             $refreshToken = $this->getCachedToken('refresh_token');

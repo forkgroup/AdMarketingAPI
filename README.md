@@ -39,7 +39,7 @@ $options = [
     // ...
 ];
 
-$app = Factory::oceanEngine($options);
+$app = Factory::oceanEngine($options, [\AdMarketingAPI\Kernel\Providers\RequestServiceProvider::class]);
 
 // 通过auth_code 获取access_token
 $oauth = $app->oauth;

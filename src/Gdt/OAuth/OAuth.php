@@ -9,6 +9,7 @@ namespace AdMarketingAPI\Gdt\OAuth;
 use AdMarketingAPI\Kernel\AccessToken;
 use AdMarketingAPI\Kernel\Contracts\AccessTokenInterface;
 use AdMarketingAPI\Kernel\Exceptions\RuntimeException;
+use AdMarketingAPI\Kernel\Http\RequestUtil;
 
 class OAuth extends AccessToken
 {
@@ -71,7 +72,7 @@ class OAuth extends AccessToken
             'client_secret' => $this->app['config']['secret'],
             'redirect_uri' => $this->prepareCallbackUrl(),
         ];
-        $auth_code = $this->app->request->get('authorization_code');
+        $auth_code = RequestUtil::get($this->app->request, 'authorization_code');
         if (empty($auth_code)) {
             // get refresh_token form cache
             $refreshToken = $this->getCachedToken('refresh_token');
