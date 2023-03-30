@@ -199,7 +199,7 @@ class BaseClient
         // access token
         $this->pushMiddleware($this->accessTokenMiddleware(), 'access_token');
         // log
-        $this->pushMiddleware($this->logMiddleware(), 'log');
+        // $this->pushMiddleware($this->logMiddleware(), 'log');
     }
 
     /**

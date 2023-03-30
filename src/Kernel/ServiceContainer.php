@@ -6,6 +6,7 @@ declare(strict_types=1);
  */
 namespace AdMarketingAPI\Kernel;
 
+use AdMarketingAPI\Kernel\Supports\Config;
 use Pimple\Container;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -15,6 +16,7 @@ use Psr\SimpleCache\CacheInterface;
  * @property ?EventDispatcherInterface $events
  * @property ?ServerRequestInterface $request
  * @property ?CacheInterface $cache
+ * @property ?Config $config
  */
 class ServiceContainer extends Container
 {

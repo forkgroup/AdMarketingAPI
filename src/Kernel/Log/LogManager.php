@@ -134,7 +134,7 @@ class LogManager implements LoggerInterface
      */
     public function getDefaultDriver()
     {
-        return $this->app['config']['log.default'];
+        return $this->app->config->get('log.default');
     }
 
     /**
