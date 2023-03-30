@@ -10,9 +10,12 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class RequestUtil
 {
-    public static function get(ServerRequestInterface $request, string $key)
+    public static function get(?ServerRequestInterface $request, string $key)
     {
-        if ($result = $request->getAttribute('key')) {
+        if(!$request){
+            return null;
+        }
+        if ($result = $request->getAttribute($key)) {
             return $result;
         }
 

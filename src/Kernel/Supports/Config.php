@@ -15,4 +15,9 @@ class Config extends Collection
     {
         return Arr::get($this->items, $key, $default);
     }
+
+    public function set($key, $value)
+    {
+        return Arr::set($this->items, $key, $value);
+    }
 }

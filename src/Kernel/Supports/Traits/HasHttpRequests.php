@@ -6,8 +6,8 @@ declare(strict_types=1);
  */
 namespace AdMarketingAPI\Kernel\Supports\Traits;
 
+use AdMarketingAPI\Kernel\Http\ClientInterface;
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\HandlerStack;
 use Psr\Http\Message\ResponseInterface;
 
