@@ -190,8 +190,8 @@ abstract class AccessToken implements AccessTokenInterface
      */
     public function prepareCallbackUrl()
     {
-        $callback = $this->app['config']->get('oauth.redirect_uri');
-        if (stripos($callback, 'http') === 0) {
+        $callback = $this->app->config->get('oauth')['redirect_uri'] ?? null;
+        if (stripos((string) $callback, 'http') === 0) {
             return $callback;
         }
         $baseUrl = $this->app['request']->getSchemeAndHttpHost();

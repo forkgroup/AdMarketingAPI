@@ -77,7 +77,7 @@ class OAuth extends AccessToken
     {
         return [
             'app_id' => $this->app->config->get('app_id'),
-            'state' => $state ?: md5(time()),
+            'state' => $state ?: md5((string) time()),
             'scope' => $this->app->config->get('oauth.scopes'),
             'redirect_uri' => $this->prepareCallbackUrl(),
         ];
