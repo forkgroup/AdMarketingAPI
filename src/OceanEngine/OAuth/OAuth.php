@@ -113,6 +113,9 @@ class OAuth extends AccessToken
         if (! empty($token['advertiser_id'])) {
             $this->app['config']->set('account_id', $token['advertiser_id']);
         }
+        if (! empty($token['advertiser_ids'])) {
+            $this->app['config']->set('account_id', $token['advertiser_ids'][0]);
+        }
         $cache = $this->getCache();
         // access token
         $accessTokenKey = $this->getCacheKey('access_token');
