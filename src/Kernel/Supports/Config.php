@@ -6,6 +6,8 @@ declare(strict_types=1);
  */
 namespace AdMarketingAPI\Kernel\Supports;
 
+use Hyperf\Collection\Collection;
+
 class Config extends Collection
 {
 }
