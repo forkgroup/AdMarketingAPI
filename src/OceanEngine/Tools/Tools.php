@@ -4,7 +4,7 @@ declare(strict_types=1);
 /**
  * @license  https://github.com/xingzhi11/AdMarketingAPI/blob/master/LICENSE
  */
-namespace AdMarketingAPI\OceanEngine\Creative;
+namespace AdMarketingAPI\OceanEngine\Tools;
 
 use AdMarketingAPI\OceanEngine\OceanEngine;
 

@@ -11,7 +11,12 @@ use AdMarketingAPI\Kernel\ServiceContainer;
 /**
  * Class Application.
  *
- * @property \EasyAdm\OceanEngine\Auth\AccessToken $access_token
+ * @property OAuth\OAuth $oauth
+ * @property Account\Account $account
+ * @property Campaign\Campaign campaign
+ * @property Ad\Ad $ad
+ * @property Creative\Creative $creative
+ * @property Tools\Tools $tools
  */
 class Application extends ServiceContainer
 {
