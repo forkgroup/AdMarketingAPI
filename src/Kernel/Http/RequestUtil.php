@@ -12,7 +12,7 @@ class RequestUtil
 {
     public static function get(?ServerRequestInterface $request, string $key)
     {
-        if(!$request){
+        if (! $request) {
             return null;
         }
         if ($result = $request->getAttribute($key)) {
